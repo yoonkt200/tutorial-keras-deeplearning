@@ -1,5 +1,5 @@
 # keras tutorial
-- It is a repository that summarizes the basic keras programming for newbee.
+- It is a repository that summarizes the basic keras for study.
 - writer : yoon
 - created : 2018. 06
 
