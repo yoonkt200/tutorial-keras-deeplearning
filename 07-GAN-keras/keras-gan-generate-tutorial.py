@@ -37,7 +37,6 @@ class GAN:
         self.D = self.discriminator()
         self.G = self.generator()
         self.GD = self.makeGD()
-        # self._optimizer = Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999)
 
     def discriminator(self):
         D = models.Sequential()
