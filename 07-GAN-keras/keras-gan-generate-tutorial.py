@@ -1,13 +1,12 @@
 import argparse
 
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from keras import models
 from keras.layers import Dense, Conv1D, Reshape, Flatten, Lambda
-from keras import optimizers
 from keras.optimizers import Adam
-from keras import backend as K
+# from keras import backend as K
 
 
 class Data:
@@ -25,6 +24,9 @@ class Data:
         self.z_sample = lambda n_batch: np.random.rand(n_batch, input_dim)
 
 
+optimizer = Adam(lr=2e-4, beta_1=0.9, beta_2=0.999)
+
+
 class GAN:
     """
     Define GAN model
@@ -35,24 +37,24 @@ class GAN:
         self.D = self.discriminator()
         self.G = self.generator()
         self.GD = self.makeGD()
-        self.optimizer = Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999)
+        # self._optimizer = Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999)
 
     def discriminator(self):
         D = models.Sequential()
         D.add(Dense(50, activation='relu', input_shape=(self.input_dim,))) # np.shape(100) == np.shape(100,)과 같은것
         D.add(Dense(50, activation='relu'))
         D.add(Dense(1, activation='sigmoid'))
-        D.compile(loss='binary_crossentropy', optimizer=self.optimizer, metrics=['accuracy'])
+        D.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         return D
 
     def generator(self):
         G = models.Sequential()
-        G.add(Reshape((50, 1), input_shape=(50,)))
+        G.add(Reshape((self.input_dim, 1), input_shape=(self.input_dim,)))
         G.add(Conv1D(50, 1, activation='relu'))
         G.add(Conv1D(50, 1, activation='sigmoid'))
         G.add(Conv1D(1, 1))
         G.add(Flatten())
-        G.compile(loss='binary_crossentropy', optimizer=self.optimizer, metrics=['accuracy'])
+        G.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         return G
 
     def makeGD(self):
@@ -61,7 +63,7 @@ class GAN:
         GD.add(G)
         GD.add(D)
         D.trainable = False
-        GD.compile(loss='binary_crossentropy', optimizer=self.optimizer, metrics=['accuracy'])
+        GD.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         D.trainable = True
         return GD
 
@@ -94,35 +96,56 @@ class Model:
                 self.train_GD()
 
             # print and show each 10n epoch
-            if self._verbose == True and ((epoch + 1) % 10 == 0):
+            if (epoch + 1) % 10 == 0:
                 gan = self.gan
                 data = self.data
                 z = data.z_sample(100)
                 gen = gan.G.predict(z)
                 real = data.real_sample(100)
-                self.show_hist(real, gen, z)
-                self.print_stat(real, gen)
+                # self.show_hist(real, gen, z)
+                self.print_stats(real, gen)
 
     def train_D(self):
         """
         train Discriminator
         """
-        pass
+
+        # Real data
+        real = self.data.real_sample(self.batch_size)
+
+        # Generated data
+        z = self.data.z_sample(self.batch_size)
+        gen = self.gan.G.predict(z)
+
+        # train discriminator
+        self.gan.D.trainable = True
+        x = np.concatenate([real, gen], axis=0)
+        y = np.array([1] * real.shape[0] + [0] * gen.shape[0])
+        self.gan.D.train_on_batch(x, y)
 
     def train_GD(self):
         """
         train Generator (Not Discriminator)
         """
-        pass
 
-    def show_hist(self, real, gen, z):
-        """
-        hist on specific train epoch, show generator input z, generated gen, data of real
-        """
-        plt.hist(real.reshape(-1), histtype='step', label='Real')
-        plt.hist(gen.reshape(-1), histtype='step', label='Generated')
-        plt.hist(z.reshape(-1), histtype='step', label='Input')
-        plt.legend(loc=0)
+        # seed data for data generation
+        z = self.data.z_sample(self.batch_size)
+
+        # only train generator
+        self.gan.D.trainable = False
+
+        # train generator
+        y = np.array([1] * z.shape[0])
+        self.gan.GD.train_on_batch(z, y)
+
+    # def show_hist(self, real, gen, z):
+    #     """
+    #     hist on specific train epoch, show generator input z, generated gen, data of real
+    #     """
+    #     plt.hist(real.reshape(-1), histtype='step', label='Real')
+    #     plt.hist(gen.reshape(-1), histtype='step', label='Generated')
+    #     plt.hist(z.reshape(-1), histtype='step', label='Input')
+    #     plt.legend(loc=0)
 
     def print_stats(self, real, gen):
         """
