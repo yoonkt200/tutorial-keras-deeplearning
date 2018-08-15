@@ -1,7 +1,6 @@
 import argparse
 
 import numpy as np
-# import matplotlib.pyplot as plt
 
 from keras.models import Model, Sequential
 from keras.layers.core import Reshape, Dense, Dropout, Flatten
@@ -49,6 +48,12 @@ class Data:
 
 class GAN:
     def __init__(self, learning_rate, z_input_dim):
+        """
+        init params
+
+        :param learning_rate: learning rate of optimizer
+        :param z_input_dim: input dim of z
+        """
         self.learning_rate = learning_rate
         self.z_input_dim = z_input_dim
         self.D = self.discriminator()
@@ -56,6 +61,10 @@ class GAN:
         self.GD = self.combined()
 
     def discriminator(self):
+        """
+        define discriminator
+
+        """
         D = Sequential()
         D.add(Conv2D(256, (5, 5),
                      padding='same',
@@ -108,6 +117,10 @@ class GAN:
         return D
 
     def generator(self):
+        """
+        define generator
+
+        """
         # G = Sequential()
         # G.add(Dense(512, input_dim=self.z_input_dim))
         # G.add(LeakyReLU(0.2))
@@ -178,6 +191,10 @@ class GAN:
         return G
 
     def combined(self):
+        """
+        defien combined gan model
+
+        """
         G, D = self.G, self.D
         D.trainable = False
         GD = Sequential()
@@ -234,7 +251,7 @@ class Model:
             for iter in range(self.n_iter_G):
                 gloss = self.train_G()
 
-            # save loss data
+            # print loss data
             print('Discriminator loss:', str(dloss))
             print('Generator loss:', str(gloss))
 
