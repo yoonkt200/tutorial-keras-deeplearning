@@ -63,7 +63,6 @@ class GAN:
     def discriminator(self):
         """
         define discriminator
-
         """
         D = Sequential()
         D.add(Conv2D(256, (5, 5),
@@ -119,7 +118,6 @@ class GAN:
     def generator(self):
         """
         define generator
-
         """
         # G = Sequential()
         # G.add(Dense(512, input_dim=self.z_input_dim))
@@ -193,7 +191,6 @@ class GAN:
     def combined(self):
         """
         defien combined gan model
-
         """
         G, D = self.G, self.D
         D.trainable = False
