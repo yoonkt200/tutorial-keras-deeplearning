@@ -76,6 +76,7 @@ class Model:
         self.batch_size = args.batch_size
         self.learning_rate = args.learning_rate
         self.data = Data(args.mu, args.sigma, args.input_dim)
+
         # the reason why D, G differ in iter : Generator needs more training than Discriminator
         self.n_iter_D = args.n_iter_D
         self.n_iter_G = args.n_iter_G
