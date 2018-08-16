@@ -84,53 +84,12 @@ class GAN:
 
         adam = Adam(lr=self.learning_rate, beta_1=0.5)
         D.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
-
-        # discriminator = Sequential()
-        # discriminator.add(Dense(1024, input_dim=784, kernel_initializer=initializers.RandomNormal(stddev=0.02)))
-        # discriminator.add(LeakyReLU(0.2))
-        # discriminator.add(Dropout(0.3))
-        # discriminator.add(Dense(512))
-        # discriminator.add(LeakyReLU(0.2))
-        # discriminator.add(Dropout(0.3))
-        # discriminator.add(Dense(256))
-        # discriminator.add(LeakyReLU(0.2))
-        # discriminator.add(Dropout(0.3))
-        # discriminator.add(Dense(1, activation='sigmoid'))
-        # discriminator.compile(loss='binary_crossentropy', optimizer=adam)
-        #
-        # d_input = Input(shape=shp)
-        # H = Convolution2D(256, 5, 5, subsample=(2, 2), border_mode='same', activation='relu')(d_input)
-        # H = LeakyReLU(0.2)(H)
-        # H = Dropout(dropout_rate)(H)
-        # H = Convolution2D(512, 5, 5, subsample=(2, 2), border_mode='same', activation='relu')(H)
-        # H = LeakyReLU(0.2)(H)
-        # H = Dropout(dropout_rate)(H)
-        # H = Flatten()(H)
-        # H = Dense(256)(H)
-        # H = LeakyReLU(0.2)(H)
-        # H = Dropout(dropout_rate)(H)
-        # d_V = Dense(2, activation='softmax')(H)
-        # discriminator = Model(d_input, d_V)
-        # discriminator.compile(loss='categorical_crossentropy', optimizer=dopt)
-
         return D
 
     def generator(self):
         """
         define generator
         """
-        # G = Sequential()
-        # G.add(Dense(512, input_dim=self.z_input_dim))
-        # G.add(LeakyReLU(0.2))
-        # G.add(Dense(128 * 7 * 7))
-        # G.add(LeakyReLU(0.2))
-        # G.add(BatchNormalization())
-        # G.add(Reshape((128, 7, 7), input_shape=(128 * 7 * 7,)))
-        # G.add(UpSampling2D(size=(2, 2)))
-        # G.add(Conv2D(64, (5, 5), padding='same', activation='tanh'))
-        # G.add(UpSampling2D(size=(2, 2)))
-        # G.add(Conv2D(1, (5, 5), padding='same', activation='tanh'))
-
         G = Sequential()
         G.add(Dense(512, input_dim=self.z_input_dim))
         G.add(LeakyReLU(0.2))
@@ -145,47 +104,6 @@ class GAN:
 
         adam = Adam(lr=self.learning_rate, beta_1=0.5)
         G.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
-
-        # model = models.Sequential()
-        # model.add(layers.Dense(1024, activation='tanh', input_dim=input_dim))
-        # model.add(layers.Dense(128 * 7 * 7, activation='tanh'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.Reshape((128, 7, 7), input_shape=(128 * 7 * 7,)))
-        # model.add(layers.UpSampling2D(size=(2, 2)))
-        # model.add(layers.Conv2D(64, (5, 5), padding='same', activation='tanh'))
-        # model.add(layers.UpSampling2D(size=(2, 2)))
-        # model.add(layers.Conv2D(1, (5, 5), padding='same', activation='tanh'))
-        #
-        #
-        # generator = Sequential()
-        # generator.add(Dense(256, input_dim=self.z_input_dim, kernel_initializer=initializers.RandomNormal(stddev=0.02)))
-        # generator.add(LeakyReLU(0.2))
-        # generator.add(Dense(512))
-        # generator.add(LeakyReLU(0.2))
-        # generator.add(Dense(1024))
-        # generator.add(LeakyReLU(0.2))
-        # generator.add(Dense(784, activation='tanh'))
-        # generator.compile(loss='binary_crossentropy', optimizer=adam)
-        #
-        # nch = 200
-        # g_input = Input(shape=[100])
-        # H = Dense(nch * 14 * 14, init='glorot_normal')(g_input)
-        # H = BatchNormalization(mode=2)(H)
-        # H = Activation('relu')(H)
-        # H = Reshape([nch, 14, 14])(H)
-        # H = UpSampling2D(size=(2, 2))(H)
-        # H = Convolution2D(nch / 2, 3, 3, border_mode='same', init='glorot_uniform')(H)
-        # H = BatchNormalization(mode=2)(H)
-        # H = Activation('relu')(H)
-        # H = Convolution2D(nch / 4, 3, 3, border_mode='same', init='glorot_uniform')(H)
-        # H = BatchNormalization(mode=2)(H)
-        # H = Activation('relu')(H)
-        # H = Convolution2D(1, 1, 1, border_mode='same', init='glorot_uniform')(H)
-        # g_V = Activation('sigmoid')(H)
-        # generator = Model(g_input, g_V)
-        # generator.compile(loss='binary_crossentropy', optimizer=opt)
-        # generator.summary()
-
         return G
 
     def combined(self):
@@ -201,14 +119,6 @@ class GAN:
         adam = Adam(lr=self.learning_rate, beta_1=0.5)
         GD.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
         D.trainable = True
-
-        # discriminator.trainable = False
-        # ganInput = Input(shape=(randomDim,))
-        # x = generator(ganInput)
-        # ganOutput = discriminator(x)
-        # gan = Model(inputs=ganInput, outputs=ganOutput)
-        # gan.compile(loss='binary_crossentropy', optimizer=adam)
-
         return GD
 
 
@@ -302,7 +212,7 @@ def main():
                         help='Input dimension for the generator.')
     parser.add_argument('--n_iter_D', type=int, default=1,
                         help='training iteration for D')
-    parser.add_argument('--n_iter_G', type=int, default=1,
+    parser.add_argument('--n_iter_G', type=int, default=5,
                         help='training iteration for G')
     args = parser.parse_args()
 
