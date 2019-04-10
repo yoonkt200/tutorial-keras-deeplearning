@@ -1,1 +1,3 @@
-print("hello world!")
+import config
+
+print(config.DATA_DIR)
